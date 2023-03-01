@@ -5,7 +5,13 @@ Parameters:
   KeyName:
     Description: Enter the name of your keyname. Rianna says work! work! work!
     Type: AWS::EC2::KeyPair::KeyName
-
+  HostedId:
+    Description: select your
+    Type: AWS::Route53::HostedZone::Id    
+  Romandn:
+    Description: select your
+    Type: String
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
 
 Resources:
   WebServerSecurityGroup:
@@ -46,12 +52,21 @@ Resources:
         wget ${FOLDER}/templates/result.html
         cd ..
         python3 app.py
+  RecordName:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedId   
+      Name: !Ref Romandn # Required
+      ResourceRecords:
+      - !GetAtt WebServerHost.PublicIp
+      TTL: 900
+      Type: A # Required        
 
 Outputs: 
   WebsiteURL:
     Value: !Sub 
       - http://${PublicAddress}
-      - PublicAddress: !GetAtt WebServerHost.PublicDnsName
+      - PublicAddress: !Ref Romandn
     Description: Roman Numerals Converter Application URL
 
 
